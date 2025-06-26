@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "name": "Deshi Ghee",
+    "size": "500 ml",
+    "price": 330.0,
+    "strikePrice": 400,
+    "discount": "10% off",
+    "image": "https://www.haldirams.com/media/catalog/product/cache/91c328e4e467a384bb2dca2d478e6436/h/a/haldiram-s-nagpur-deshi-ghee-500ml-carton-product-images-o492847894-p591936007-1-202206032304_2_1.jpg"
+  },
+  {
+    "id": 2,
+    "name": "Deshi Ghee",
+    "size": "500 ml Tin",
+    "price": 350.0,
+    "strikePrice": 400,
+    "discount": "10% off",
+    "image": "https://www.haldirams.com/media/catalog/product/cache/91c328e4e467a384bb2dca2d478e6436/g/h/ghee-500ml_1.jpg"
+  },
+  {
+    "id": 3,
+    "name": "Deshi Ghee",
+    "size": "200 ml",
+    "price": 145.0,
+    "strikePrice": 200,
+    "discount": "10% off",
+    "image": "https://www.haldirams.com/media/catalog/product/cache/91c328e4e467a384bb2dca2d478e6436/h/a/haldiram-s-nagpur-deshi-ghee-500ml-carton-product-images-o492847894-p591936007-1-202206032304_2.jpg"
+  },
+  {
+    "id": 4,
+    "name": "Deshi Ghee",
+    "size": "1 Ltr. Tin",
+    "price": 650.0,
+    "strikePrice": 800,
+    "discount": "10% off",
+    "image": "https://www.haldirams.com/media/catalog/product/cache/91c328e4e467a384bb2dca2d478e6436/d/e/desi_ghee_1.jpg"
+  },
+  {
+    "id": 5,
+    "name": "Deshi Ghee",
+    "size": "1 Ltr.",
+    "price": 625.0,
+    "strikePrice": 800,
+    "discount": "10% off",
+    "image": "https://www.haldirams.com/media/catalog/product/cache/91c328e4e467a384bb2dca2d478e6436/h/a/haldiram-s-nagpur-deshi-ghee-500ml-carton-product-images-o492847894-p591936007-1-202206032304_2_1.jpg"
+  }
+]
