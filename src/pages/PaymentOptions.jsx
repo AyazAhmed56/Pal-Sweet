@@ -53,6 +53,16 @@ const PaymentOptions = () => {
       return;
     }
 
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      alert("You must be logged in to place an order.");
+      return;
+    }
+
     const { name, image, price, size, quantity, category_id } = item;
 
     const { error } = await supabase.from("orders").insert([
@@ -66,6 +76,7 @@ const PaymentOptions = () => {
         phno,
         mode: method,
         category_id,
+        requesting_user_id: user.id, // ✅ Attach the logged-in user's ID
       },
     ]);
 

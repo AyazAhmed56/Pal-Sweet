@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
@@ -13,25 +13,58 @@ const Profile = () => {
   const [dob, setDob] = useState("");
   const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
 
+  // ✅ Fetch authenticated user and their profile
+  useEffect(() => {
+    const fetchUser = async () => {
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError || !user) return;
+
+      setUser(user);
+      setEmail(user.email);
+
+      const { data: profile, error: profileError } = await supabase
+        .from("users")
+        .select("*")
+        .eq("email", user.email)
+        .single();
+
+      if (!profileError && profile) {
+        setName(profile.name || "");
+        setAddress(profile.address || "");
+        setDob(profile.dob || "");
+        setPhno(profile.phno || "");
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  // ✅ Handle update
   const handlePost = async (e) => {
     e.preventDefault();
     setLoading(true);
-    // const supabase = await getSupabaseClient();
-    const { data, error } = await supabase
+
+    const { error } = await supabase
       .from("users")
-      .insert([{ name, email, phno, dob, address }]);
+      .update({
+        name,
+        address,
+        dob,
+        phno,
+      })
+      .eq("email", email);
 
     if (error) {
-      console.error("Insert Error:", error);
-      alert("❌ Error inserting data: " + (error.message || "Unknown error"));
+      console.error("Update Error:", error);
+      alert("❌ Error updating profile: " + error.message);
     } else {
-      alert("✅ Profile Saved!");
-      setName("");
-      setEmail("");
-      setPhno("");
-      setDob("");
-      setAddress("");
+      alert("✅ Profile updated successfully!");
     }
 
     setLoading(false);
@@ -79,11 +112,9 @@ const Profile = () => {
           <Label className="text-lg mb-1 block text-gray-700">Email</Label>
           <Input
             type="email"
-            placeholder="Enter your email"
             className="h-12 bg-[#FFFBEA] text-lg"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
+            disabled
           />
         </div>
 
@@ -93,7 +124,7 @@ const Profile = () => {
               Phone Number
             </Label>
             <Input
-              type="number"
+              type="tel"
               placeholder="Enter your phone number"
               className="h-12 bg-[#FFFBEA] text-lg"
               value={phno}
@@ -120,7 +151,7 @@ const Profile = () => {
           disabled={loading}
           className="w-full h-12 text-lg mt-6 bg-[#FFB700] hover:bg-[#e4a200]"
         >
-          {loading ? "Posting..." : "Submit Profile"}
+          {loading ? "Saving..." : "Save Profile"}
         </Button>
       </form>
     </motion.div>

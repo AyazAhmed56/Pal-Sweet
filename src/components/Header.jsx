@@ -3,16 +3,9 @@ import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { FaSearch, FaUser, FaRegHeart } from "react-icons/fa";
 import { Menu, X } from "lucide-react";
-import {
-  SignedIn,
-  SignedOut,
-  UserButton,
-  SignIn,
-  useUser,
-} from "@clerk/clerk-react";
 
 const Header = () => {
-  const { user } = useUser();
+  const [user, setUser] = useState(null);
   const [showSignIn, setShowSignIn] = useState(false);
   const [search, setSearch] = useSearchParams();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -20,6 +13,28 @@ const Header = () => {
   const [allItems, setAllItems] = useState([]);
   const [filteredResults, setFilteredResults] = useState([]);
   const navigate = useNavigate();
+  const [isLogin, setIsLogin] = useState(true);
+  const [authError, setAuthError] = useState(null);
+  const [signupSuccess, setSignupSuccess] = useState(false);
+  const ADMIN_EMAIL = "ayazahmedsiddiqui040@gmail.com";
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (data?.user) {
+        setUser(data.user);
+      } else {
+        setUser(null);
+      }
+    };
+    getUser();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    navigate("/");
+  };
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -93,34 +108,46 @@ const Header = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          <SignedOut>
+          {/* {user?.email === ADMIN_EMAIL && (
+            <>
+              <Link to="/postsweets">Post Sweet</Link>
+              <Link to="/admin/orders">Admin Orders</Link>
+            </>
+          )} */}
+
+          {!user ? (
             <button
               onClick={() => setShowSignIn(true)}
               className="bg-black text-white px-4 py-2 rounded hover:bg-yellow-600 transition-all duration-300"
             >
               Login
             </button>
-          </SignedOut>
-
-          <SignedIn>
-            {/* {user?.unsafeMetadata?.email === "admin@gmail.com" && (
-              <div>
-                <Link to="/postsweets">
-                  <Button variant="destructive" className="rounded-full">
-                    <PenBox size={20} className="mr-2" />
+          ) : (
+            <>
+              {user.email === "ayazahmedsiddiqui040@gmail.com" && (
+                <>
+                  <Link
+                    to="/postsweets"
+                    className="text-sm text-red-600 font-medium"
+                  >
                     Post Sweet
-                  </Button>
-                </Link>
-                <Link to="/admin/orders">
-                  <Button variant="destructive" className="rounded-full">
-                    <PenBox size={20} className="mr-2" />
-                    Admin Order
-                  </Button>
-                </Link>
-              </div>
-            )} */}
-            <UserButton appearance={{ elements: { avatarBox: "w-10 h-10" } }} />
-          </SignedIn>
+                  </Link>
+                  <Link
+                    to="/admin/orders"
+                    className="text-sm text-red-600 font-medium"
+                  >
+                    Admin Orders
+                  </Link>
+                </>
+              )}
+              <button
+                onClick={handleLogout}
+                className="ml-3 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
+              >
+                Logout
+              </button>
+            </>
+          )}
 
           <div className="group relative">
             <a
@@ -155,10 +182,124 @@ const Header = () => {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
           onClick={handleOverlayClick}
         >
-          <SignIn
-            signUpForceRedirectUrl="/onboarding"
-            fallbackRedirectUrl="/"
-          />
+          <div className="bg-white w-full max-w-sm mx-auto p-8 rounded-xl shadow-xl relative">
+            <button
+              className="absolute top-3 right-4 text-gray-600 hover:text-black text-2xl"
+              onClick={() => setShowSignIn(false)}
+            >
+              &times;
+            </button>
+
+            <h2 className="text-2xl font-bold text-center mb-6 text-yellow-600">
+              {isLogin ? "Welcome Back 👋" : "Create Your Account 🧁"}
+            </h2>
+
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const email = e.target.email.value;
+                const password = e.target.password.value;
+
+                if (isLogin) {
+                  // LOGIN
+                  const { data, error } =
+                    await supabase.auth.signInWithPassword({
+                      email,
+                      password,
+                    });
+
+                  if (error) {
+                    setAuthError(error.message);
+                  } else {
+                    setUser(data.user);
+                    setShowSignIn(false);
+                    setAuthError(null);
+
+                    const role = email === ADMIN_EMAIL ? "admin" : "user";
+
+                    // OPTIONAL: Insert or update user info
+                    await supabase.from("users").upsert([
+                      {
+                        email: email,
+                        role: role, // ADD THIS COLUMN IN TABLE IF NOT PRESENT
+                      },
+                    ]);
+                  }
+                } else {
+                  // SIGNUP
+                  const { data, error } = await supabase.auth.signUp({
+                    email,
+                    password,
+                  });
+
+                  if (error) {
+                    setAuthError(error.message);
+                  } else {
+                    setAuthError(null);
+                    setSignupSuccess(true);
+
+                    const role = email === ADMIN_EMAIL ? "admin" : "user";
+
+                    // Insert minimal record, full details can be added later in Profile page
+                    await supabase.from("users").insert([
+                      {
+                        email: email,
+                        role: role,
+                      },
+                    ]);
+                  }
+                }
+              }}
+              className="space-y-4"
+            >
+              <input
+                name="email"
+                type="email"
+                placeholder="Email"
+                className="w-full px-4 py-2 border border-yellow-400 rounded-full focus:outline-yellow-600"
+                required
+              />
+              <input
+                name="password"
+                type="password"
+                placeholder="Password"
+                className="w-full px-4 py-2 border border-yellow-400 rounded-full focus:outline-yellow-600"
+                required
+              />
+
+              {authError && (
+                <p className="text-red-500 text-sm font-medium">{authError}</p>
+              )}
+
+              {signupSuccess && !isLogin && (
+                <p className="text-green-600 text-sm font-medium">
+                  Signup successful! Please check your email to verify your
+                  account.
+                </p>
+              )}
+
+              <button
+                type="submit"
+                className="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded-full font-semibold"
+              >
+                {isLogin ? "Login" : "Sign Up"}
+              </button>
+            </form>
+
+            <p className="mt-4 text-sm text-center">
+              {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+              <span
+                onClick={() => {
+                  setIsLogin(!isLogin);
+                  setAuthError(null);
+                  setSignupSuccess(false);
+                }}
+                className="text-blue-600 underline cursor-pointer font-medium"
+              >
+                {isLogin ? "Sign up" : "Login"}
+              </span>
+            </p>
+          </div>
         </div>
       )}
 
