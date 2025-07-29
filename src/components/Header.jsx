@@ -124,7 +124,7 @@ const Header = () => {
             </button>
           ) : (
             <>
-              {user.email === "ayazahmedsiddiqui040@gmail.com" && (
+              {user.email === ADMIN_EMAIL && (
                 <>
                   <Link
                     to="/postsweets"

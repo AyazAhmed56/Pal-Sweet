@@ -134,6 +134,7 @@ const PostSweet = () => {
 
           <Input
             placeholder="Pack Size (in gms)"
+            type="number"
             className="h-14 text-xl bg-[#FFFBEA]"
             value={size}
             onChange={(e) => setSize(e.target.value)}
