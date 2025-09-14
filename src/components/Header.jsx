@@ -336,7 +336,8 @@ const Header = () => {
           className="flex justify-center md:justify-start md:w-44 hover:scale-105 transition-all"
         >
           <img
-            src="https://www.haldirams.com/static/version1744365301/frontend/Shoptimize/theme-hnagpur/en_US/images/logo.svg"
+            // src="https://www.haldirams.com/static/version1744365301/frontend/Shoptimize/theme-hnagpur/en_US/images/logo.svg"
+            src="/20250914_140014.png"
             alt="Logo"
             className="w-36 md:w-48"
           />
