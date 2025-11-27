@@ -333,13 +333,12 @@ const Header = () => {
 
         <a
           href="/"
-          className="flex justify-center md:justify-start md:w-44 hover:scale-105 transition-all"
+          className="flex justify-center items-center md:justify-start md:w-44 hover:scale-105 transition-transform duration-300"
         >
           <img
-            // src="https://www.haldirams.com/static/version1744365301/frontend/Shoptimize/theme-hnagpur/en_US/images/logo.svg"
-            src="/20250914_140014.png"
+            src="/logo.jpeg"
             alt="Logo"
-            className="w-36 md:w-48"
+            className="h-16 w-auto md:h-20 object-contain drop-shadow-xl rounded-xl"
           />
         </a>
 
